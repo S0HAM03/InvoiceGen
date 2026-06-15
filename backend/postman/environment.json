@@ -1,0 +1,16 @@
+{
+  "id": "e0e3cf03-31ed-46df-9d5d-c60ebcdbd742",
+  "name": "Invoice Generator Local",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "enabled": true
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "enabled": true
+    }
+  ]
+}

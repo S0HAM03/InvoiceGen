@@ -1,0 +1,30 @@
+﻿src/app.ts(16,18): error TS2339: Property 'Handlers' does not exist on type 'typeof import("C:/Users/soham gadekar/OneDrive/Desktop/Inovoice Generator/backend/node_modules/@sentry/node/build/types/index")'.
+src/app.ts(73,18): error TS2339: Property 'Handlers' does not exist on type 'typeof import("C:/Users/soham gadekar/OneDrive/Desktop/Inovoice Generator/backend/node_modules/@sentry/node/build/types/index")'.
+src/config/env.ts(10,46): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(def: number): ZodDefault<ZodPipe<ZodString, ZodTransform<number, string>>>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'number'.
+  Overload 2 of 2, '(def: () => number): ZodDefault<ZodPipe<ZodString, ZodTransform<number, string>>>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type '() => number'.
+src/middleware/validate.ts(2,10): error TS2724: '"zod"' has no exported member named 'AnyZodObject'. Did you mean 'ZodObject'?
+src/middleware/validate.ts(17,15): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/middleware/validate.ts(17,31): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/modules/auth/auth.controller.ts(26,36): error TS2352: Conversion of type 'ObjectId' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/modules/auth/auth.controller.ts(27,43): error TS2352: Conversion of type 'ObjectId' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/modules/auth/auth.controller.ts(64,38): error TS2352: Conversion of type 'ObjectId' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/modules/auth/auth.controller.ts(65,45): error TS2352: Conversion of type 'ObjectId' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/modules/auth/auth.controller.ts(133,36): error TS2352: Conversion of type 'ObjectId' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/modules/auth/auth.controller.ts(136,46): error TS2352: Conversion of type 'ObjectId' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/modules/clients/client.controller.ts(56,50): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/modules/clients/client.controller.ts(76,50): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/modules/clients/client.controller.ts(99,50): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/modules/invoices/invoice.controller.ts(87,52): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/modules/invoices/invoice.controller.ts(109,52): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/modules/invoices/invoice.controller.ts(152,52): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/modules/users/user.model.ts(57,5): error TS2349: This expression is not callable.
+  Type 'SaveOptions' has no call signatures.
