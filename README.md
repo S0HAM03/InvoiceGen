@@ -1,8 +1,8 @@
 # Invoice Generator Backend
 
-A secure, production-ready backend service for managing invoices and client information. Built with Node.js, Express, TypeScript, and MongoDB, this API provides comprehensive invoice management capabilities with a React frontend.
+A secure, production-ready backend service for managing invoices and client information. Built with Node.js, Express, TypeScript, and MongoDB, this API provides comprehensive invoice management cap[...]
 
-🔗 **Live Demo**: https://invoicegen-22l6.onrender.com/login
+🔗 **Live Demo**: https://invoicegen-22l6.onrender.com
 
 ## 📋 Table of Contents
 
@@ -17,7 +17,7 @@ A secure, production-ready backend service for managing invoices and client info
 
 ## Introduction
 
-The Invoice Generator Backend is a full-featured REST API designed to streamline invoice and client management workflows. It provides secure authentication, comprehensive CRUD operations for invoices and clients, and is deployed and accessible at https://invoicegen-22l6.onrender.com/login.
+The Invoice Generator Backend is a full-featured REST API designed to streamline invoice and client management workflows. It provides secure authentication, comprehensive CRUD operations for invoi[...]
 
 ## ✨ Features
 
