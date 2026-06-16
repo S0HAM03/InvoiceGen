@@ -41,9 +41,9 @@ export default function DashboardPage() {
           api.get('/invoices?limit=5&sort=-createdAt'),
         ]);
 
-        const totalClients = clientsRes.data.data.pagination?.total || clientsRes.data.data.clients?.length || 0;
-        const invoices = invoicesRes.data.data.invoices || [];
-        const allInvoicesTotal = invoicesRes.data.data.pagination?.total || invoices.length;
+        const totalClients = clientsRes.data.pagination?.total || (Array.isArray(clientsRes.data.data) ? clientsRes.data.data.length : clientsRes.data.data.clients?.length) || 0;
+        const invoices = Array.isArray(invoicesRes.data.data) ? invoicesRes.data.data : invoicesRes.data.data.invoices || [];
+        const allInvoicesTotal = invoicesRes.data.pagination?.total || invoices.length;
 
         // Calculate stats from the returned invoices
         let draftCount = 0, sentCount = 0, paidCount = 0, overdueCount = 0, revenue = 0;

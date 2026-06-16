@@ -1,4 +1,5 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
@@ -37,7 +38,7 @@ export default function InvoiceFormPage() {
 
   useEffect(() => {
     api.get('/clients?limit=100').then(({ data }) => {
-      setClients(data.data.clients || []);
+      setClients(Array.isArray(data.data) ? data.data : data.data.clients || []);
     }).catch(() => {});
 
     if (isEdit) {
@@ -91,15 +92,18 @@ export default function InvoiceFormPage() {
     }
     setLoading(true);
     try {
-      const payload = {
-        client: form.client,
-        invoiceNumber: form.invoiceNumber,
+      const payload: any = {
+        clientId: form.client,
+        invoiceNumber: form.invoiceNumber || `INV-${Date.now().toString().slice(-4)}`,
         status: form.status,
-        dueDate: form.dueDate,
+        dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : '',
         taxRate: Number(form.taxRate),
         notes: form.notes,
         lineItems: items.filter((i) => i.description),
       };
+      if (!isEdit) {
+        payload.date = new Date().toISOString();
+      }
       if (isEdit) {
         await api.patch(`/invoices/${id}`, payload);
         toast.success('Invoice updated');
@@ -109,7 +113,7 @@ export default function InvoiceFormPage() {
       }
       navigate('/invoices');
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to save invoice');
+      toast.error(err.response?.data?.error?.message || err.response?.data?.message || 'Failed to save invoice');
     } finally {
       setLoading(false);
     }

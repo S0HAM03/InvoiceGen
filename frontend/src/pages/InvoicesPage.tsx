@@ -25,7 +25,7 @@ export default function InvoicesPage() {
       const params = new URLSearchParams({ limit: '50', sort: '-createdAt' });
       if (statusFilter) params.set('status', statusFilter);
       const { data } = await api.get(`/invoices?${params}`);
-      setInvoices(data.data.invoices || []);
+      setInvoices(Array.isArray(data.data) ? data.data : data.data.invoices || []);
     } catch {
       toast.error('Failed to load invoices');
     } finally {

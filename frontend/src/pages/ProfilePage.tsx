@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
 import toast from 'react-hot-toast';
 import './Profile.css';
 
 export default function ProfilePage() {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   const [name, setName] = useState(user?.name || '');
   const [loading, setLoading] = useState(false);
 
@@ -15,11 +16,11 @@ export default function ProfilePage() {
     confirmPassword: '',
   });
 
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await api.put('/users/profile', { name });
+      await api.put('/users/profile', { name });
       toast.success('Profile updated');
       // This will force a context refresh if the endpoint returned updated user data
       // For simplicity, we just reload or rely on next fetch
@@ -31,7 +32,7 @@ export default function ProfilePage() {
     }
   };
 
-  const handleUpdatePassword = async (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: FormEvent) => {
     e.preventDefault();
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       toast.error('New passwords do not match');

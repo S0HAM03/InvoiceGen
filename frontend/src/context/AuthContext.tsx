@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import api from '../lib/api';
 
 interface User {
@@ -49,15 +50,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     const { data } = await api.post('/auth/login', { email, password });
     localStorage.setItem('accessToken', data.data.accessToken);
-    setUser(data.data.user);
-    localStorage.setItem('user', JSON.stringify(data.data.user));
+    const { accessToken, ...userData } = data.data;
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const register = async (name: string, email: string, password: string) => {
     const { data } = await api.post('/auth/register', { name, email, password });
     localStorage.setItem('accessToken', data.data.accessToken);
-    setUser(data.data.user);
-    localStorage.setItem('user', JSON.stringify(data.data.user));
+    const { accessToken, ...userData } = data.data;
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = async () => {

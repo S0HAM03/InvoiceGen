@@ -20,7 +20,7 @@ export default function ClientsPage() {
   const fetchClients = async () => {
     try {
       const { data } = await api.get('/clients?limit=50');
-      setClients(data.data.clients || []);
+      setClients(Array.isArray(data.data) ? data.data : data.data.clients || []);
     } catch {
       toast.error('Failed to load clients');
     } finally {

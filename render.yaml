@@ -1,0 +1,53 @@
+services:
+  # Backend Node.js Web Service
+  - type: web
+    name: invoice-gen-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        fromService:
+          type: web
+          name: invoice-gen-frontend
+          envVar: RENDER_EXTERNAL_URL
+      - key: CORS_ORIGINS
+        fromService:
+          type: web
+          name: invoice-gen-frontend
+          envVar: RENDER_EXTERNAL_URL
+
+  # Frontend Static Site
+  - type: web
+    name: invoice-gen-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: invoice-gen-backend
+          envVar: RENDER_EXTERNAL_URL
+          property: url
+          # Appends /api/v1 to the backend URL dynamically
+          # Render YAML doesn't support complex string interpolation for URLs easily, 
+          # so we might need to instruct the user to configure VITE_API_URL manually or we leave it empty for them to fill.
+          # Actually, Render doesn't natively support appending to fromService.
+          # We'll just define the key, user will have to set it.
