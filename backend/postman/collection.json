@@ -1,7 +1,30 @@
 {
   "info": {
-    "name": "Invoice Generator API",
+    "name": "InvoiceGen API",
+    "description": "Category-wise collection for InvoiceGen backend endpoints.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
   },
   "item": [
     {
@@ -10,6 +33,9 @@
         {
           "name": "Register",
           "request": {
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
             "header": [],
             "body": {
@@ -30,7 +56,24 @@
         },
         {
           "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.data && response.data.token) {",
+                  "    pm.collectionVariables.set('token', response.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
             "header": [],
             "body": {
@@ -46,6 +89,244 @@
               "raw": "{{baseUrl}}/api/v1/auth/login",
               "host": ["{{baseUrl}}"],
               "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "Create Client",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Acme Corp\",\n    \"email\": \"contact@acmecorp.com\",\n    \"phone\": \"+1-555-0123\",\n    \"address\": \"123 Business Rd, Suite 100, Cityville\",\n    \"company\": \"Acme Corporation\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "clients"]
+            }
+          }
+        },
+        {
+          "name": "Get All Clients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "clients"]
+            }
+          }
+        },
+        {
+          "name": "Get Client By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clients/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "clients", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "REPLACE_WITH_CLIENT_ID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Client",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phone\": \"+1-555-9999\",\n    \"address\": \"456 New Address St\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clients/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "clients", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "REPLACE_WITH_CLIENT_ID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Client",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/clients/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "clients", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "REPLACE_WITH_CLIENT_ID"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invoices",
+      "item": [
+        {
+          "name": "Create Invoice",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"clientId\": \"REPLACE_WITH_CLIENT_ID\",\n    \"invoiceNumber\": \"INV-001\",\n    \"date\": \"2026-06-15T00:00:00Z\",\n    \"dueDate\": \"2026-07-15T00:00:00Z\",\n    \"lineItems\": [\n        {\n            \"description\": \"Web Development Services\",\n            \"quantity\": 40,\n            \"rate\": 100\n        },\n        {\n            \"description\": \"Hosting (1 Year)\",\n            \"quantity\": 1,\n            \"rate\": 120\n        }\n    ],\n    \"taxRate\": 5,\n    \"status\": \"draft\",\n    \"notes\": \"Thank you for your business!\",\n    \"terms\": \"Payment due within 30 days.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/invoices",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "invoices"]
+            }
+          }
+        },
+        {
+          "name": "Get All Invoices",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/invoices",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "invoices"]
+            }
+          }
+        },
+        {
+          "name": "Get Invoice By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/invoices/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "invoices", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "REPLACE_WITH_INVOICE_ID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Invoice",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"sent\",\n    \"notes\": \"Invoice has been sent to client.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/invoices/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "invoices", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "REPLACE_WITH_INVOICE_ID"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Invoice",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/invoices/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "invoices", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "REPLACE_WITH_INVOICE_ID"
+                }
+              ]
             }
           }
         }

@@ -1,8 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { User } from '../users/user.model';
+import { Session } from './session.model';
 import { signAccess, signRefresh } from '../../utils/jwt';
 import { env } from '../../config/env';
+
+const createSession = async (userId: string, req: Request) => {
+  const refreshTokenPlain = signRefresh(userId);
+  const salt = await bcrypt.genSalt(10);
+  const refreshTokenHashed = await bcrypt.hash(refreshTokenPlain, salt);
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
+
+  await Session.create({
+    user: userId,
+    refreshToken: refreshTokenHashed,
+    userAgent: req.headers['user-agent'] || '',
+    ipAddress: req.ip || req.connection.remoteAddress || '',
+    expiresAt,
+  });
+
+  return refreshTokenPlain;
+};
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -24,13 +45,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     });
 
     const accessToken = signAccess(user._id.toString(), user.role);
-    const refreshTokenPlain = signRefresh(user._id.toString());
-
-    // Hash refresh token to store in DB
-    const salt = await bcrypt.genSalt(10);
-    const refreshTokenHashed = await bcrypt.hash(refreshTokenPlain, salt);
-    user.refreshToken = refreshTokenHashed;
-    await user.save();
+    const refreshTokenPlain = await createSession(user._id.toString(), req);
 
     res.cookie('jwt', refreshTokenPlain, {
       httpOnly: true,
@@ -62,13 +77,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
     if (user && (await user.matchPassword(password))) {
       const accessToken = signAccess(user._id.toString(), user.role);
-      const refreshTokenPlain = signRefresh(user._id.toString());
-
-      // Hash refresh token to store in DB
-      const salt = await bcrypt.genSalt(10);
-      const refreshTokenHashed = await bcrypt.hash(refreshTokenPlain, salt);
-      user.refreshToken = refreshTokenHashed;
-      await user.save();
+      const refreshTokenPlain = await createSession(user._id.toString(), req);
 
       res.cookie('jwt', refreshTokenPlain, {
         httpOnly: true,
@@ -109,25 +118,27 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
       throw err;
     }
 
-    // Usually we would verify the token with jsonwebtoken and check it against the DB
-    // But for brevity in this generator, if we get here we will clear the cookie and force login if invalid
-    // To properly implement the PRD:
-    // 1. Verify jwt with JWT_REFRESH_SECRET
-    // 2. Find user by decoded ID
-    // 3. Compare refreshToken string with bcrypt compared to user.refreshToken
-
-    // Simplified for now - assume token is valid and just generate new access
-    // You should expand this to proper bcrypt comparison as per PRD "Refresh token: bcrypt hash in DB"
     const decoded = require('jsonwebtoken').verify(refreshToken, env.JWT_REFRESH_SECRET) as any;
     
-    const user = await User.findById(decoded.id).select('+refreshToken');
-    if (!user || !user.refreshToken) {
+    // Find sessions for this user
+    const sessions = await Session.find({ user: decoded.id, isValid: true, expiresAt: { $gt: new Date() } });
+    
+    let matchedSession = null;
+    for (const session of sessions) {
+      const isValid = await bcrypt.compare(refreshToken, session.refreshToken);
+      if (isValid) {
+        matchedSession = session;
+        break;
+      }
+    }
+
+    if (!matchedSession) {
       throw new Error('Invalid refresh token');
     }
 
-    const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
-    if (!isValid) {
-      throw new Error('Invalid refresh token');
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      throw new Error('User not found');
     }
 
     const accessToken = signAccess(user._id.toString(), user.role);
@@ -135,9 +146,14 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
     // Rotate refresh token
     const newRefreshTokenPlain = signRefresh(user._id.toString());
     const salt = await bcrypt.genSalt(10);
-    const refreshTokenHashed = await bcrypt.hash(newRefreshTokenPlain, salt);
-    user.refreshToken = refreshTokenHashed;
-    await user.save();
+    matchedSession.refreshToken = await bcrypt.hash(newRefreshTokenPlain, salt);
+    
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    matchedSession.expiresAt = expiresAt;
+    matchedSession.ipAddress = req.ip || req.connection.remoteAddress || '';
+    matchedSession.userAgent = req.headers['user-agent'] || '';
+    await matchedSession.save();
 
     res.cookie('jwt', newRefreshTokenPlain, {
       httpOnly: true,
@@ -168,10 +184,15 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
     if (refreshToken) {
       try {
         const decoded = require('jsonwebtoken').verify(refreshToken, env.JWT_REFRESH_SECRET) as any;
-        const user = await User.findById(decoded.id);
-        if (user) {
-          user.refreshToken = undefined;
-          await user.save();
+        const sessions = await Session.find({ user: decoded.id, isValid: true });
+        
+        for (const session of sessions) {
+          const isValid = await bcrypt.compare(refreshToken, session.refreshToken);
+          if (isValid) {
+            session.isValid = false;
+            await session.save();
+            break;
+          }
         }
       } catch (e) {
         // ignore invalid token on logout
@@ -184,6 +205,60 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
     });
 
     res.status(200).json({ success: true, data: {} });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logoutAll = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Assuming requireAuth middleware adds req.user
+    const userId = (req as any).user._id;
+    await Session.updateMany({ user: userId }, { isValid: false });
+
+    res.cookie('jwt', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+
+    res.status(200).json({ success: true, message: 'Logged out of all sessions' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      // Return 200 to avoid email enumeration
+      return res.status(200).json({ success: true, message: 'If email exists, reset link sent.' });
+    }
+
+    // In a real app, generate a reset token, save hashed version to DB, and send email.
+    // We mock this behavior here.
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    
+    // Normally: user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    // user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+    // await user.save();
+    // await sendEmail({ to: user.email, text: `Token: ${resetToken}` });
+
+    res.status(200).json({ success: true, message: 'If email exists, reset link sent. (MOCK)' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { token, password } = req.body;
+
+    // In a real app, find user by hashed token and ensure token is not expired.
+    // For this mock, we just return success.
+    res.status(200).json({ success: true, message: 'Password reset successful (MOCK)' });
   } catch (error) {
     next(error);
   }

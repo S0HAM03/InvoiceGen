@@ -1,0 +1,585 @@
+{
+  "userId": "6a310a46e5115c8e6460d71f",
+  "clientId": "6a310a49e5115c8e6460d722",
+  "invoiceId": "6a310a4be5115c8e6460d724",
+  "results": [
+    {
+      "name": "Auth: Register valid user",
+      "status": 201,
+      "data": {
+        "success": true,
+        "data": {
+          "_id": "6a310a46e5115c8e6460d71f",
+          "name": "Test",
+          "email": "test_1781598789749@example.com",
+          "role": "user",
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzEwYTQ2ZTUxMTVjOGU2NDYwZDcxZiIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzgxNTk4NzkwLCJleHAiOjE3ODE1OTk2OTB9.Ers7ZnlJYlU1tiENH-APHvl6Ujpmmqf_KXsNExPvPsE"
+        }
+      }
+    },
+    {
+      "name": "Auth: Register duplicate email",
+      "status": 409,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "CONFLICT",
+          "message": "User already exists"
+        }
+      }
+    },
+    {
+      "name": "Auth: Register missing fields",
+      "status": 400,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "Validation failed",
+          "fields": {
+            "body.email": [
+              "Invalid input: expected string, received undefined"
+            ],
+            "body.password": [
+              "Invalid input: expected string, received undefined"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Auth: Register invalid email",
+      "status": 400,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "Validation failed",
+          "fields": {
+            "body.email": [
+              "Invalid email address"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Auth: Login valid user",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {
+          "_id": "6a310a46e5115c8e6460d71f",
+          "name": "Test",
+          "email": "test_1781598789749@example.com",
+          "role": "user",
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzEwYTQ2ZTUxMTVjOGU2NDYwZDcxZiIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzgxNTk4NzkxLCJleHAiOjE3ODE1OTk2OTF9.gkR2eRa0nEop7_uwUGOxM7v6zuAFvXPVgVEr-bJOiA8"
+        }
+      }
+    },
+    {
+      "name": "Auth: Login wrong password",
+      "status": 401,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Invalid email or password"
+        }
+      }
+    },
+    {
+      "name": "Auth: Login missing fields",
+      "status": 400,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "Validation failed",
+          "fields": {
+            "body.password": [
+              "Invalid input: expected string, received undefined"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Auth: Get Profile without token",
+      "status": 401,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Not authorized, no token"
+        }
+      }
+    },
+    {
+      "name": "Auth: Get Profile with valid token",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {
+          "_id": "6a310a46e5115c8e6460d71f",
+          "name": "Test",
+          "email": "test_1781598789749@example.com",
+          "role": "user",
+          "avatar": "",
+          "businessLogo": ""
+        }
+      }
+    },
+    {
+      "name": "Client: Create without token",
+      "status": 401,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Not authorized, no token"
+        }
+      }
+    },
+    {
+      "name": "Client: Create valid",
+      "status": 201,
+      "data": {
+        "success": true,
+        "data": {
+          "userId": "6a310a46e5115c8e6460d71f",
+          "name": "Acme Corp",
+          "email": "acme@test.com",
+          "phone": "1234567890",
+          "isDeleted": false,
+          "_id": "6a310a49e5115c8e6460d722",
+          "createdAt": "2026-06-16T08:33:13.532Z",
+          "updatedAt": "2026-06-16T08:33:13.532Z",
+          "__v": 0
+        }
+      }
+    },
+    {
+      "name": "Client: Create missing required name",
+      "status": 400,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "Validation failed",
+          "fields": {
+            "body.name": [
+              "Invalid input: expected string, received undefined"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Client: Create duplicate email for same user",
+      "status": 201,
+      "data": {
+        "success": true,
+        "data": {
+          "userId": "6a310a46e5115c8e6460d71f",
+          "name": "Acme Corp 2",
+          "email": "acme@test.com",
+          "isDeleted": false,
+          "_id": "6a310a4ae5115c8e6460d723",
+          "createdAt": "2026-06-16T08:33:14.023Z",
+          "updatedAt": "2026-06-16T08:33:14.023Z",
+          "__v": 0
+        }
+      }
+    },
+    {
+      "name": "Client: Get all clients",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": [
+          {
+            "_id": "6a310a4ae5115c8e6460d723",
+            "userId": "6a310a46e5115c8e6460d71f",
+            "name": "Acme Corp 2",
+            "email": "acme@test.com",
+            "isDeleted": false,
+            "createdAt": "2026-06-16T08:33:14.023Z",
+            "updatedAt": "2026-06-16T08:33:14.023Z",
+            "__v": 0
+          },
+          {
+            "_id": "6a310a49e5115c8e6460d722",
+            "userId": "6a310a46e5115c8e6460d71f",
+            "name": "Acme Corp",
+            "email": "acme@test.com",
+            "phone": "1234567890",
+            "isDeleted": false,
+            "createdAt": "2026-06-16T08:33:13.532Z",
+            "updatedAt": "2026-06-16T08:33:13.532Z",
+            "__v": 0
+          }
+        ],
+        "pagination": {
+          "total": 2,
+          "page": 1,
+          "limit": 20,
+          "totalPages": 1
+        }
+      }
+    },
+    {
+      "name": "Client: Get single client",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {
+          "_id": "6a310a49e5115c8e6460d722",
+          "userId": "6a310a46e5115c8e6460d71f",
+          "name": "Acme Corp",
+          "email": "acme@test.com",
+          "phone": "1234567890",
+          "isDeleted": false,
+          "createdAt": "2026-06-16T08:33:13.532Z",
+          "updatedAt": "2026-06-16T08:33:13.532Z",
+          "__v": 0
+        }
+      }
+    },
+    {
+      "name": "Client: Get non-existent client",
+      "status": 404,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Resource not found"
+        }
+      }
+    },
+    {
+      "name": "Client: Update client",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {
+          "_id": "6a310a49e5115c8e6460d722",
+          "userId": "6a310a46e5115c8e6460d71f",
+          "name": "Acme Corp",
+          "email": "acme@test.com",
+          "phone": "1234567890",
+          "isDeleted": false,
+          "createdAt": "2026-06-16T08:33:13.532Z",
+          "updatedAt": "2026-06-16T08:33:15.178Z",
+          "__v": 0,
+          "company": "Acme LLC"
+        }
+      }
+    },
+    {
+      "name": "Client: Update non-existent client",
+      "status": 404,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Resource not found"
+        }
+      }
+    },
+    {
+      "name": "Invoice: Create without token",
+      "status": 401,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Not authorized, no token"
+        }
+      }
+    },
+    {
+      "name": "Invoice: Create valid",
+      "status": 201,
+      "data": {
+        "success": true,
+        "data": {
+          "userId": "6a310a46e5115c8e6460d71f",
+          "clientId": "6a310a49e5115c8e6460d722",
+          "invoiceNumber": "INV-1781598789749",
+          "date": "2026-06-16T08:33:15.716Z",
+          "dueDate": "2026-06-16T08:33:15.719Z",
+          "lineItems": [
+            {
+              "description": "Dev Work",
+              "quantity": 10,
+              "rate": 50,
+              "amount": 500,
+              "_id": "6a310a4be5115c8e6460d725"
+            }
+          ],
+          "subtotal": 500,
+          "taxRate": 10,
+          "taxAmount": 50,
+          "total": 550,
+          "status": "draft",
+          "isDeleted": false,
+          "_id": "6a310a4be5115c8e6460d724",
+          "createdAt": "2026-06-16T08:33:15.994Z",
+          "updatedAt": "2026-06-16T08:33:15.994Z",
+          "__v": 0
+        }
+      }
+    },
+    {
+      "name": "Invoice: Create missing clientId",
+      "status": 400,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "Validation failed",
+          "fields": {
+            "body.clientId": [
+              "Invalid input: expected string, received undefined"
+            ],
+            "body.date": [
+              "Invalid input"
+            ],
+            "body.dueDate": [
+              "Invalid input"
+            ],
+            "body.lineItems": [
+              "Invalid input: expected array, received undefined"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Invoice: Create with invalid status",
+      "status": 400,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "VALIDATION_ERROR",
+          "message": "Validation failed",
+          "fields": {
+            "body.date": [
+              "Invalid input"
+            ],
+            "body.dueDate": [
+              "Invalid input"
+            ],
+            "body.lineItems": [
+              "Invalid input: expected array, received undefined"
+            ],
+            "body.status": [
+              "Invalid option: expected one of \"draft\"|\"sent\"|\"paid\"|\"overdue\"|\"cancelled\""
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "Invoice: Get all invoices",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": [
+          {
+            "_id": "6a310a4be5115c8e6460d724",
+            "userId": "6a310a46e5115c8e6460d71f",
+            "clientId": {
+              "_id": "6a310a49e5115c8e6460d722",
+              "name": "Acme Corp",
+              "email": "acme@test.com",
+              "company": "Acme LLC"
+            },
+            "invoiceNumber": "INV-1781598789749",
+            "date": "2026-06-16T08:33:15.716Z",
+            "dueDate": "2026-06-16T08:33:15.719Z",
+            "lineItems": [
+              {
+                "description": "Dev Work",
+                "quantity": 10,
+                "rate": 50,
+                "amount": 500,
+                "_id": "6a310a4be5115c8e6460d725"
+              }
+            ],
+            "subtotal": 500,
+            "taxRate": 10,
+            "taxAmount": 50,
+            "total": 550,
+            "status": "draft",
+            "isDeleted": false,
+            "createdAt": "2026-06-16T08:33:15.994Z",
+            "updatedAt": "2026-06-16T08:33:15.994Z",
+            "__v": 0
+          }
+        ],
+        "pagination": {
+          "total": 1,
+          "page": 1,
+          "limit": 20,
+          "totalPages": 1
+        }
+      }
+    },
+    {
+      "name": "Invoice: Get single invoice",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {
+          "_id": "6a310a4be5115c8e6460d724",
+          "userId": "6a310a46e5115c8e6460d71f",
+          "clientId": {
+            "_id": "6a310a49e5115c8e6460d722",
+            "name": "Acme Corp",
+            "email": "acme@test.com",
+            "phone": "1234567890",
+            "company": "Acme LLC"
+          },
+          "invoiceNumber": "INV-1781598789749",
+          "date": "2026-06-16T08:33:15.716Z",
+          "dueDate": "2026-06-16T08:33:15.719Z",
+          "lineItems": [
+            {
+              "description": "Dev Work",
+              "quantity": 10,
+              "rate": 50,
+              "amount": 500,
+              "_id": "6a310a4be5115c8e6460d725"
+            }
+          ],
+          "subtotal": 500,
+          "taxRate": 10,
+          "taxAmount": 50,
+          "total": 550,
+          "status": "draft",
+          "isDeleted": false,
+          "createdAt": "2026-06-16T08:33:15.994Z",
+          "updatedAt": "2026-06-16T08:33:15.994Z",
+          "__v": 0
+        }
+      }
+    },
+    {
+      "name": "Invoice: Get non-existent invoice",
+      "status": 404,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Resource not found"
+        }
+      }
+    },
+    {
+      "name": "Invoice: Update invoice status",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {
+          "_id": "6a310a4be5115c8e6460d724",
+          "userId": "6a310a46e5115c8e6460d71f",
+          "clientId": "6a310a49e5115c8e6460d722",
+          "invoiceNumber": "INV-1781598789749",
+          "date": "2026-06-16T08:33:15.716Z",
+          "dueDate": "2026-06-16T08:33:15.719Z",
+          "lineItems": [
+            {
+              "description": "Dev Work",
+              "quantity": 10,
+              "rate": 50,
+              "amount": 500,
+              "_id": "6a310a4be5115c8e6460d725"
+            }
+          ],
+          "subtotal": 500,
+          "taxRate": 10,
+          "taxAmount": 50,
+          "total": 550,
+          "status": "sent",
+          "isDeleted": false,
+          "createdAt": "2026-06-16T08:33:15.994Z",
+          "updatedAt": "2026-06-16T08:33:17.730Z",
+          "__v": 0
+        }
+      }
+    },
+    {
+      "name": "Invoice: Update lineItems directly (recalculate test)",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {
+          "_id": "6a310a4be5115c8e6460d724",
+          "userId": "6a310a46e5115c8e6460d71f",
+          "clientId": "6a310a49e5115c8e6460d722",
+          "invoiceNumber": "INV-1781598789749",
+          "date": "2026-06-16T08:33:15.716Z",
+          "dueDate": "2026-06-16T08:33:15.719Z",
+          "lineItems": [
+            {
+              "description": "Dev Work",
+              "quantity": 5,
+              "rate": 50,
+              "amount": 250,
+              "_id": "6a310a4ee5115c8e6460d72a"
+            }
+          ],
+          "subtotal": 250,
+          "taxRate": 10,
+          "taxAmount": 25,
+          "total": 275,
+          "status": "sent",
+          "isDeleted": false,
+          "createdAt": "2026-06-16T08:33:15.994Z",
+          "updatedAt": "2026-06-16T08:33:18.076Z",
+          "__v": 1
+        }
+      }
+    },
+    {
+      "name": "Invoice: Delete invoice",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {}
+      }
+    },
+    {
+      "name": "Invoice: Delete non-existent invoice",
+      "status": 404,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Resource not found"
+        }
+      }
+    },
+    {
+      "name": "Client: Delete client",
+      "status": 200,
+      "data": {
+        "success": true,
+        "data": {}
+      }
+    },
+    {
+      "name": "Client: Delete non-existent client",
+      "status": 404,
+      "data": {
+        "success": false,
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Resource not found"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+.invoices-page {
+  max-width: 1200px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .header-actions .form-select {
+    width: 100% !important;
+  }
+}

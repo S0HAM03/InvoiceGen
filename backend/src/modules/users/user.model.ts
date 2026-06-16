@@ -7,6 +7,8 @@ export interface IUser extends Document {
   password?: string; // Optional if using OAuth
   role: 'admin' | 'user';
   refreshToken?: string;
+  avatar?: string;
+  businessLogo?: string;
   isDeleted: boolean;
   deletedAt?: Date;
   matchPassword(enteredPassword: string): Promise<boolean>;
@@ -37,6 +39,14 @@ const userSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
       select: false, // Don't return by default
+    },
+    avatar: {
+      type: String,
+      default: '',
+    },
+    businessLogo: {
+      type: String,
+      default: '',
     },
     isDeleted: {
       type: Boolean,

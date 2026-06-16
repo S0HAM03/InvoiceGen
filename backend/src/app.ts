@@ -38,24 +38,13 @@ if (env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// 7. Health, Readiness, and Root
-app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
-
+// 7. Root
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'online',
     message: 'Invoice Generator API is running smoothly.',
     version: '1.0.0'
   });
-});
-
-import mongoose from 'mongoose';
-app.get('/ready', (req, res) => {
-  if (mongoose.connection.readyState === 1) {
-    res.status(200).json({ status: 'ready' });
-  } else {
-    res.status(503).json({ status: 'unavailable' });
-  }
 });
 
 // 8. Global rate limit
@@ -71,11 +60,13 @@ import authRoutes from './modules/auth/auth.routes';
 import userRoutes from './modules/users/user.routes';
 import clientRoutes from './modules/clients/client.routes';
 import invoiceRoutes from './modules/invoices/invoice.routes';
+import healthRoutes from './modules/health/health.routes';
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/clients', clientRoutes);
 app.use('/api/v1/invoices', invoiceRoutes);
+app.use('/api/v1/health', healthRoutes);
 
 // 11. Sentry error handler
 if (env.SENTRY_DSN) {

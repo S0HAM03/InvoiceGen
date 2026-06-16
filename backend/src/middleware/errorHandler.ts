@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
 
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  let statusCode = err.statusCode || (res.statusCode === 200 ? 500 : res.statusCode);
   let code = err.code || 'INTERNAL_ERROR';
   let message = err.message || 'Server Error';
   let fields = err.fields || undefined;
